@@ -1,0 +1,45 @@
+x-app: &app
+  build:
+    context: .
+    dockerfile: Dockerfile
+  environment:
+    REDIS_URL: redis://redis:6379/
+  volumes:
+    - .:/app
+  depends_on:
+    redis:
+      condition: service_healthy
+
+services:
+  app:
+    <<: *app
+    depends_on:
+      sidekiq:
+        condition: service_started
+      sidekiq_web:
+        condition: service_started
+
+  sidekiq:
+    <<: *app
+    command: bundle exec sidekiq -r ./config/application.rb
+
+  sidekiq_web:
+    <<: *app
+    command: bundle exec rackup -o 0.0.0.0 config/sidekiq_web.ru
+    ports:
+      - '9292:9292'
+
+  redis:
+    image: redis:7.4.1
+    volumes:
+      - redis:/data
+    ports:
+      - 6379
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  redis:

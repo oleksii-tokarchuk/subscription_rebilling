@@ -1,0 +1,11 @@
+require:
+ - rubocop-rspec
+ - rubocop-factory_bot
+ - rubocop-performance
+ - rubocop-thread_safety
+
+AllCops:
+  NewCops: enable
+
+Style/Documentation:
+  Enabled: false
