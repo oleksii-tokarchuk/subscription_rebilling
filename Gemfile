@@ -21,8 +21,8 @@ end
 
 group :development do
   gem 'rubocop', '~> 1.69', require: false
-  gem 'rubocop-factory_bot', '~> 2.26', require: false
   gem 'rubocop-performance', '~> 1.23', require: false
+  gem 'rubocop-rake', '~> 0.6', require: false
   gem 'rubocop-rspec', '~> 3.2', require: false
   gem 'rubocop-thread_safety', '~> 0.6', require: false
 end
@@ -32,4 +32,5 @@ group :test do
   gem 'ffaker', '~> 2.23'
   gem 'rom-factory', '~> 0.12'
   gem 'rspec', '~> 3.13'
+  gem 'rspec-sidekiq', '~> 5.0'
 end

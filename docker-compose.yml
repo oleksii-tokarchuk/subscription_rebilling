@@ -1,4 +1,6 @@
 x-app: &app
+  stdin_open: true
+  tty: true
   build:
     context: .
     dockerfile: Dockerfile
