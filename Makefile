@@ -1,10 +1,14 @@
+.DEFAULT_GOAL := build
+DOCKER_COMPOSE = docker compose -p subscription_rebilling -f docker-compose.yml
+
 build:
-	docker compose -p subscription_rebilling -f docker-compose.yml build
+	$(DOCKER_COMPOSE) build app
 bash:
-	docker compose -p subscription_rebilling -f docker-compose.yml run --rm app bash
+	$(DOCKER_COMPOSE) run --rm app bash
 start:
-	docker compose -p subscription_rebilling -f docker-compose.yml up app -d
+	$(DOCKER_COMPOSE) up app -d
 stop:
-	docker compose -p subscription_rebilling -f docker-compose.yml stop
+	$(DOCKER_COMPOSE) stop
+restart: stop start
 clean:
-	docker compose -p subscription_rebilling -f docker-compose.yml down -v
+	$(DOCKER_COMPOSE) down -v

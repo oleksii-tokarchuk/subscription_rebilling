@@ -2,6 +2,7 @@ FROM ruby:3.3.6-slim
 
 RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && \
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    git \
     libsqlite3-dev \
     sqlite3 \
     build-essential \

@@ -2,9 +2,10 @@
 
 class CreateRenewal
   include Interactor
+  include Loggable
 
   def call
-    context.subscription = DB.relations['subscriptions'].fetch(context.subscription_id)
+    context.subscription = DB.relations['subscriptions'].by_pk(context.subscription_id).one
 
     DB.gateways[:default].transaction do
       create_renewal_invoice

@@ -29,7 +29,6 @@ end
 
 group :test do
   gem 'database_cleaner-sequel', '~> 2.0'
-  gem 'ffaker', '~> 2.23'
   gem 'rom-factory', '~> 0.12'
   gem 'rspec', '~> 3.13'
   gem 'rspec-sidekiq', '~> 5.0'

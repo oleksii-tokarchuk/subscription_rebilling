@@ -1,11 +1,14 @@
 x-app: &app
   stdin_open: true
   tty: true
+  pull_policy: never
+  image: subscription_rebilling
   build:
     context: .
     dockerfile: Dockerfile
   environment:
     REDIS_URL: redis://redis:6379/
+    PAYMENT_GATEWAY_URL: http://mocked_payment_gateway:3333
   volumes:
     - .:/app
   depends_on:
@@ -20,6 +23,8 @@ services:
         condition: service_started
       sidekiq_web:
         condition: service_started
+      mocked_payment_gateway:
+        condition: service_started
 
   sidekiq:
     <<: *app
@@ -27,9 +32,19 @@ services:
 
   sidekiq_web:
     <<: *app
-    command: bundle exec rackup -o 0.0.0.0 config/sidekiq_web.ru
+    command: bundle exec rackup -o 0.0.0.0 runner.ru
     ports:
       - '9292:9292'
+    volumes:
+      - ./config/sidekiq_web.ru:/app/runner.ru
+
+  mocked_payment_gateway:
+    <<: *app
+    command: bundle exec ruby runner.rb
+    ports:
+      - '3333:3333'
+    volumes:
+      - ./config/mocked_payment_gateway.rb:/app/runner.rb
 
   redis:
     image: redis:7.4.1
