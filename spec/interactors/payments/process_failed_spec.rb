@@ -4,8 +4,8 @@ RSpec.shared_examples 'fails payment' do
   it 'fails payment' do
     expect { context }.to change {
       updated_payment = DB.relations['payments'].by_pk(payment[:id]).one
-      [updated_payment[:paid_at]&.to_i, updated_payment[:status]]
-    }.from([nil, 'pending']).to([Time.now.to_i, 'failed'])
+      [updated_payment[:paid_at], updated_payment[:status]]
+    }.from([nil, 'pending']).to([Time.now, 'failed'])
   end
 end
 
@@ -13,7 +13,7 @@ describe Payments::ProcessFailed do
   subject(:context) { described_class.call(payment_id: payment[:id], payment: payment) }
 
   describe '.call' do
-    around { |ex| Timecop.freeze { ex.run } }
+    around { |ex| Timecop.freeze(Date.today) { ex.run } }
 
     context "when subscription has 'pending' status" do
       let(:subscription) { Factory[:subscription, :pending] }

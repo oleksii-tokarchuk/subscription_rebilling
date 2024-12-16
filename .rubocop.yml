@@ -9,6 +9,9 @@ AllCops:
   Exclude:
   - 'db/migrate/*'
 
+Layout/FirstHashElementIndentation:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
@@ -23,3 +26,7 @@ RSpec/ExampleLength:
   Enabled: false
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/integration/**/*'

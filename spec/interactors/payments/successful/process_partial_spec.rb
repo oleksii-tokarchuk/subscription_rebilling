@@ -26,11 +26,13 @@ describe Payments::Successful::ProcessPartial do
       DB.relations['payments'].combine(:renewal_invoice).by_pk(payment[:id]).one
     end
 
+    around { |ex| Timecop.freeze(Date.today) { ex.run } }
+
     it 'updates payment' do
       expect { context }.to change {
         updated_payment = DB.relations['payments'].by_pk(payment[:id]).one
-        [updated_payment[:paid_at]&.to_i, updated_payment[:status]]
-      }.from([nil, 'pending']).to([Time.now.to_i, 'paid'])
+        [updated_payment[:paid_at], updated_payment[:status]]
+      }.from([nil, 'pending']).to([Time.now, 'paid'])
     end
 
     it 'updates renewal_invoice' do

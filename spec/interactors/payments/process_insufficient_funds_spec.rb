@@ -4,8 +4,8 @@ RSpec.shared_examples 'updates payment' do
   it 'updates payment' do
     expect { context }.to change {
       updated_payment = DB.relations['payments'].by_pk(payment[:id]).one
-      [updated_payment[:paid_at]&.to_i, updated_payment[:status]]
-    }.from([nil, 'pending']).to([Time.now.to_i, 'insufficient_funds'])
+      [updated_payment[:paid_at], updated_payment[:status]]
+    }.from([nil, 'pending']).to([Time.now, 'insufficient_funds'])
   end
 end
 
@@ -28,7 +28,7 @@ describe Payments::ProcessInsufficientFunds do
   subject(:context) { described_class.call(payment_id: payment[:id], payment: payment) }
 
   describe '.call' do
-    around { |ex| Timecop.freeze { ex.run } }
+    around { |ex| Timecop.freeze(Date.today) { ex.run } }
 
     context 'when retries with reduced amount left' do
       let(:subscription) { Factory[:subscription, :pending] }
@@ -75,7 +75,7 @@ describe Payments::ProcessInsufficientFunds do
           payment = Factory[
             :payment,
             renewal_invoice_id: renewal_invoice[:id],
-            amount_cents: renewal_invoice[:amount_cents],
+            amount_cents: renewal_invoice[:amount_cents] - 1,
             is_partial: true,
             status: 'pending'
           ]
@@ -89,7 +89,7 @@ describe Payments::ProcessInsufficientFunds do
             Factory[
               :payment,
               renewal_invoice_id: renewal_invoice[:id],
-              amount_cents: renewal_invoice[:amount_cents],
+              amount_cents: renewal_invoice[:amount_cents] - 1,
               is_partial: true,
               status: 'insufficient_funds'
             ]
@@ -106,7 +106,7 @@ describe Payments::ProcessInsufficientFunds do
           Factory[
             :payment,
             renewal_invoice_id: renewal_invoice[:id],
-            amount_cents: renewal_invoice[:amount_cents],
+            amount_cents: renewal_invoice[:amount_cents] - 1,
             is_partial: true,
             status: 'insufficient_funds'
           ]

@@ -2,7 +2,7 @@
 
 describe Persistence::Relations::Subscriptions do
   describe '#for_renewal' do
-    subject(:result) { DB.relations[:subscriptions].for_renewal }
+    subject(:result) { DB.relations['subscriptions'].for_renewal }
 
     let!(:for_renewal) { Array.new(2) { Factory[:subscription, :for_renewal] } }
 

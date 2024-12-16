@@ -11,9 +11,11 @@ module Payments
     def call
       DB.gateways[:default].transaction do
         update_payment
+        return if subscription_partially_paid?
+
         if retries_with_reduced_amount_left?
           create_partial_payment
-        elsif !subscription_partially_paid?
+        else
           fail_invoice
           fail_subscription
         end

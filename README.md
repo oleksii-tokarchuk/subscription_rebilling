@@ -6,6 +6,12 @@ rake db:migrate # setup DB
 rake db:seed # load some test from db/seeds.rb if needed
 ```
 
+In order to reseed data:
+```bash
+rake db:reset # removes data from DB
+rake db:seed # load some test from db/seeds.rb if needed
+```
+
 ## Start billing:
 
 ```bash
