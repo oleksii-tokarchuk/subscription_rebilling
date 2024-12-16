@@ -38,7 +38,6 @@ GEM
       zeitwerk (~> 2.6)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
-    ffaker (2.23.0)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -154,6 +153,7 @@ GEM
     sqlite3 (2.4.1-x86_64-darwin)
     sqlite3 (2.4.1-x86_64-linux-gnu)
     sqlite3 (2.4.1-x86_64-linux-musl)
+    timecop (0.9.10)
     transproc (1.1.1)
     unicode-display_width (3.1.2)
       unicode-emoji (~> 4.0, >= 4.0.4)
@@ -175,7 +175,6 @@ PLATFORMS
 
 DEPENDENCIES
   database_cleaner-sequel (~> 2.0)
-  ffaker (~> 2.23)
   interactor (~> 3.1)
   pry (~> 0.15)
   rack-session (~> 2.0)
@@ -193,6 +192,7 @@ DEPENDENCIES
   rubocop-thread_safety (~> 0.6)
   sidekiq (~> 7.3.6)
   sqlite3 (~> 2.4)
+  timecop (~> 0.9.10)
   webrick (~> 1.9)
 
 RUBY VERSION

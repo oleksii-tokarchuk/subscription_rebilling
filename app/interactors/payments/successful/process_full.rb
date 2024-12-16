@@ -18,7 +18,7 @@ module Payments
 
       def update_payment
         update_payment = DB.relations['payments'].by_pk(context.payment_id).command(:update)
-        update_payment.call(paid_at: DateTime.now, status: 'paid')
+        update_payment.call(paid_at: Time.now, status: 'paid')
       end
 
       def update_invoice

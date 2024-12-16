@@ -7,7 +7,7 @@ module Payments
       include Loggable
 
       def call
-        if context.payment.final? || !context.payment[:is_partial]
+        if !context.payment[:is_partial] || context.payment.final?
           Payments::Successful::ProcessFull.call(context)
         else
           Payments::Successful::ProcessPartial.call(context)

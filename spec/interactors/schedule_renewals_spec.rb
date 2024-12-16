@@ -15,8 +15,8 @@ describe ScheduleRenewals do
   describe '.call' do
     it "schedules CreateRenewalJob for 'for_renewal' subscriptions" do
       expect { context }.to change(CreateRenewalJob.jobs, :size).from(0).to(2)
-      expect(CreateRenewalJob).to have_enqueued_sidekiq_job(for_renewal[0][:id])
-      expect(CreateRenewalJob).to have_enqueued_sidekiq_job(for_renewal[1][:id])
+      expect(CreateRenewalJob).to have_enqueued_sidekiq_job(for_renewal[0][:id]).immediately
+      expect(CreateRenewalJob).to have_enqueued_sidekiq_job(for_renewal[1][:id]).immediately
     end
   end
 end

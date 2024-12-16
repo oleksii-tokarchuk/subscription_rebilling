@@ -37,13 +37,14 @@ describe CreateRenewal do
     end
 
     it 'updates subscription status' do
-      expect { context }
-        .to change { DB.relations['subscriptions'].by_pk(subscription[:id]).one[:status] }.from('paid').to('pending')
+      expect { context }.to change {
+        DB.relations['subscriptions'].by_pk(subscription[:id]).one[:status]
+      }.from('paid').to('pending')
     end
 
     it 'schedules ProcessRenewalPaymentJob for renewal invoice payment' do
       expect { context }.to change(ProcessRenewalPaymentJob.jobs, :size).from(0).to(1)
-      expect(ProcessRenewalPaymentJob).to have_enqueued_sidekiq_job(DB.relations['payments'].first[:id])
+      expect(ProcessRenewalPaymentJob).to have_enqueued_sidekiq_job(DB.relations['payments'].first[:id]).immediately
     end
 
     context 'when error is raised' do

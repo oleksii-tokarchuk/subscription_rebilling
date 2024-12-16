@@ -6,7 +6,7 @@ module Payments
       include Interactor
       include Loggable
 
-      REMAINING_PAYMENT_DELAY = 7 * 24 * 60 * 60 # 1 week
+      FINAL_PAYMENT_DELAY = 7 * 24 * 60 * 60 # 1 week
 
       def call
         DB.gateways[:default].transaction do
@@ -16,14 +16,14 @@ module Payments
           create_final_payment
         end
 
-        ProcessRenewalPaymentJob.perform_in(REMAINING_PAYMENT_DELAY, context.create_final_payment[:id])
+        ProcessRenewalPaymentJob.perform_in(FINAL_PAYMENT_DELAY, context.final_payment[:id])
       end
 
       private
 
       def update_payment
         update_payment = DB.relations['payments'].by_pk(context.payment_id).command(:update)
-        update_payment.call(paid_at: DateTime.now, status: 'paid')
+        update_payment.call(paid_at: Time.now, status: 'paid')
       end
 
       def update_invoice
@@ -39,7 +39,7 @@ module Payments
 
       def create_final_payment
         create_final_payment = DB.relations['payments'].command(:create)
-        context.create_final_payment = create_final_payment.call(
+        context.final_payment = create_final_payment.call(
           renewal_invoice_id: context.payment[:renewal_invoice_id],
           amount_cents: amount_cents_left,
           is_partial: true,

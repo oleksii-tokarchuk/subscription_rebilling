@@ -32,4 +32,5 @@ group :test do
   gem 'rom-factory', '~> 0.12'
   gem 'rspec', '~> 3.13'
   gem 'rspec-sidekiq', '~> 5.0'
+  gem 'timecop', '~> 0.9.10'
 end
