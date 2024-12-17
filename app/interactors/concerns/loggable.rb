@@ -7,7 +7,8 @@ module Loggable
         context_to_s = lambda do
           string = []
           context.each_pair do |key, value|
-            string << "#{key} = #{value}"
+            formatted_value = value.is_a?(String) ? "'#{value}'" : value
+            string << "#{key} = #{formatted_value}"
           end
           string.join(', ')
         end

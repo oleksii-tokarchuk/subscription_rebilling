@@ -176,7 +176,7 @@ describe 'process subscriptions' do
     end
   end
 
-  context 'when 1 attempt is insufficient funds, 2nd and 3rd are success' do
+  context 'when 1st attempt is insufficient funds, 2nd and 3rd are success' do
     before do
       allow(Net::HTTP).to receive(:post).and_return(
         instance_double(Net::HTTPOK, body: { 'status' => 'insufficient_funds' }.to_json),
@@ -315,7 +315,7 @@ describe 'process subscriptions' do
     end
   end
 
-  context 'when 1st attempt is insufficient funds, 2nd is success, 3th is insufficient funds' do
+  context 'when 1st attempt is insufficient funds, 2nd is success, 3rd is insufficient funds' do
     before do
       allow(Net::HTTP).to receive(:post).and_return(
         instance_double(Net::HTTPOK, body: { 'status' => 'insufficient_funds' }.to_json),
@@ -458,6 +458,80 @@ describe 'process subscriptions' do
           is_partial: true,
           paid_at: Time.now,
           status: 'paid'
+        }
+      )
+    end
+  end
+
+  context 'when 3 attempts are insufficient funds, and 4th is failed' do
+    before do
+      allow(Net::HTTP).to receive(:post).and_return(
+        instance_double(Net::HTTPOK, body: { 'status' => 'insufficient_funds' }.to_json),
+        instance_double(Net::HTTPOK, body: { 'status' => 'insufficient_funds' }.to_json),
+        instance_double(Net::HTTPOK, body: { 'status' => 'insufficient_funds' }.to_json),
+        instance_double(Net::HTTPOK, body: { 'status' => 'failed' }.to_json)
+      )
+    end
+
+    it 'fails subscription' do
+      process_subscriptions
+
+      expect(DB.relations['subscriptions'].to_a).to contain_exactly({
+        id: an_instance_of(Integer),
+        amount_cents: 10_000,
+        next_renewal_at: Date.new(2024, 3, 25),
+        status: 'failed'
+      })
+    end
+
+    it 'fails renewal invoice' do
+      process_subscriptions
+
+      expect(DB.relations['renewal_invoices'].to_a).to contain_exactly({
+        id: an_instance_of(Integer),
+        subscription_id: an_instance_of(Integer),
+        amount_cents: 10_000,
+        amount_cents_left: 10_000,
+        invoiced_at: Date.new(2024, 3, 25),
+        status: 'failed'
+      })
+    end
+
+    it 'creates payments' do
+      process_subscriptions
+
+      expect(DB.relations['payments'].map_to(nil).to_a).to contain_exactly(
+        {
+          id: an_instance_of(Integer),
+          renewal_invoice_id: an_instance_of(Integer),
+          amount_cents: 10_000,
+          is_partial: false,
+          paid_at: Time.now,
+          status: 'insufficient_funds'
+        },
+        {
+          id: an_instance_of(Integer),
+          renewal_invoice_id: an_instance_of(Integer),
+          amount_cents: 7500,
+          is_partial: true,
+          paid_at: Time.now,
+          status: 'insufficient_funds'
+        },
+        {
+          id: an_instance_of(Integer),
+          renewal_invoice_id: an_instance_of(Integer),
+          amount_cents: 5000,
+          is_partial: true,
+          paid_at: Time.now,
+          status: 'insufficient_funds'
+        },
+        {
+          id: an_instance_of(Integer),
+          renewal_invoice_id: an_instance_of(Integer),
+          amount_cents: 2500,
+          is_partial: true,
+          paid_at: Time.now,
+          status: 'failed'
         }
       )
     end
